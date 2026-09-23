@@ -1,0 +1,230 @@
+{
+  "info": {
+    "_postman_id": "f7811367-11c8-4547-b23e-43bbbb02d61c",
+    "name": "BlueHorizon",
+    "description": "# BlueHorizon API Collection\n\n**BlueHorizon** is a travel website API that powers end-to-end travel experiences — from user authentication to flight bookings.\n\nThis collection provides a comprehensive set of API requests for interacting with the BlueHorizon platform. It is intended for developers building, testing, or integrating with the BlueHorizon travel service. The requests are organized by functional module, making it easy to navigate and test individual areas of the API independently or as part of an end-to-end workflow.\n\n## Modules Covered\n\n- **Authentication** — User login, registration, logout, and token management\n    \n- **Dashboard** — Overview and summary data for authenticated users\n    \n- **Packages** — Browse travel packages, view details, and make bookings\n    \n- **Destinations** — Explore and search available travel destinations\n    \n- **Hotels** — Search, list, and book hotel accommodations\n    \n- **Flight Booking** — Search for flights, book tickets, and manage existing bookings\n    \n\n## Getting Started\n\n1. Set the `baseUrl` variable in the active environment to point to your BlueHorizon API server.\n    \n2. Use the **Authentication** requests to log in and obtain an access token.\n    \n3. The token will be used automatically across subsequent requests for authorized endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57811923"
+  },
+  "item": [
+    {
+      "name": "SignUp",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Status Code Check (200 OK or 201 Created)\r\npm.test(\"Registration Successful\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r\n});\r\n\r\n// 2. Dashboard Redirect Check\r\npm.test(\"Redirected to Dashboard / Response contains HTML UI\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"<!DOCTYPE html>\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"firstName\": \"Sarah\",\r\n    \"lastName\": \"QA\",\r\n    \"email\": \"sarah.qa@example.com\",\r\n    \"username\": \"sarah_qa\",\r\n    \"phone\": \"03001234567\",\r\n    \"password\": \"SecurePassword123\",\r\n    \"confirmPassword\": \"SecurePassword123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/signup",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "signup"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Login Successful\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify Response Payload or Redirect\", function () {\r\n    // Agar API JSON response de rahi hai:\r\n    if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\")) {\r\n        var jsonData = pm.response.json();\r\n        pm.expect(jsonData).to.have.property(\"token\");\r\n        pm.environment.set(\"authToken\", jsonData.token);\r\n    } else {\r\n        // Agar Full-stack MVC HTML return kar raha hai:\r\n        pm.expect(pm.response.text()).to.include(\"<!DOCTYPE html>\");\r\n    }\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"sarah.qa@example.com\",\r\n    \"password\": \"SecurePassword123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Flights Retrieved",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Flights retrieved successfully\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Verify flights data structure\", function () {\r\n    if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\")) {\r\n        var jsonData = pm.response.json();\r\n        pm.expect(jsonData).to.be.an(\"array\");\r\n    } else {\r\n        pm.expect(pm.response.text()).to.include(\"<!DOCTYPE html>\");\r\n    }\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/flights",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "flights"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add to cart",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Check if item was successfully submitted/redirected\r\npm.test(\"Flight seat added to cart\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 201, 302]);\r\n});\r\n\r\n// 2. Verify redirect to Cart Page or HTML response\r\npm.test(\"Response rendered Cart page\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"<!DOCTYPE html>\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"airline\": \"Air France\",\r\n    \"origin\": \"Paris\",\r\n    \"destination\": \"New York\",\r\n    \"seatClass\": \"First Class\",\r\n    \"seatNumber\": \"F1\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/flights",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "flights"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "View Cart",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Status Code Check\r\npm.test(\"Cart page loaded successfully\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// 2. Verify Cart Page Rendered\r\npm.test(\"Cart UI contains item structure\", function () {\r\n    var responseText = pm.response.text();\r\n    pm.expect(responseText).to.include(\"<!DOCTYPE html>\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cart",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "cart"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "checkout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 1. Check if checkout was successful or redirected to confirmation page\r\npm.test(\"Checkout processed successfully\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 201, 302]);\r\n});\r\n\r\n// 2. Verify confirmation page/HTML response\r\npm.test(\"Response renders confirmation UI\", function () {\r\n    pm.expect(pm.response.text()).to.include(\"<!DOCTYPE html>\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "paymentMethod",
+              "value": "Credit Card",
+              "type": "text"
+            },
+            {
+              "key": "confirm",
+              "value": "True",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/checkout",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "checkout"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
